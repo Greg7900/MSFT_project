@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+    <model name="qr_test">
+        <static>true</static>
+        <link name="qr_test_link">
+            <pose>0 0 0.1 0 0 1.5707963267948966</pose>
+            <visual name="visual_qr_simple">
+                <cast_shadows>false</cast_shadows>
+                <geometry><box><size>0.2 0.2 1e-3</size></box></geometry>
+                <material>
+                    <script>
+                        <uri>model://qr_test/materials/scripts</uri>
+                        <uri>model://qr_test/materials/textures</uri>
+                        <name>qr_test/qr_test</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="cube_link">
+            <visual name="cube_visual">
+                <geometry>
+                <box>
+                    <size>0.25 0.25 0.1</size>
+                </box>
+                </geometry>
+                <material>
+                <script>
+                    <uri>file://media/materials/scripts/gazebo.material</uri>
+                    <name>Gazebo/Grey</name>
+                </script>
+                </material>
+                <pose>0 0 0.05 0 0 0</pose>
+            </visual>
+        </link>    
+            <!-- Create a fixed joint between the cube and the plane -->
+        <joint name="fixed_joint" type="fixed">
+            <parent>qr_test_link</parent>
+            <child>cube_link</child>
+            
+        </joint>    
+    </model>
+</sdf>

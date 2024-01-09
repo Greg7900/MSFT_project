@@ -1,0 +1,6 @@
+#!/bin/bash
+
+while true; do
+  rostopic pub -1 /gazebo/orbiting_cube/link/force geometry_msgs/Wrench "{force: {x: 0, y: 0.1, z: 0}}"
+  sleep 0.1
+done

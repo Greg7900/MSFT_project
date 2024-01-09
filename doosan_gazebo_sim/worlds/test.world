@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+
+    <!-- Ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Robot model (already present in the simulation) -->
+    <include>
+      <uri>model://robot</uri> <!-- Replace with your actual robot model name -->
+    </include>
+
+    <!-- Spawn a smaller cube -->
+    <model name="orbiting_cube">
+      <static>false</static>
+      <pose>1 0 1 0 0 0</pose> <!-- Adjust the initial pose as needed -->
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size> <!-- Set the size to 0.1 x 0.1 x 0.1 -->
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size> <!-- Set the size to 0.1 x 0.1 x 0.1 -->
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <joint name="orbit_joint" type="revolute">
+        <parent>robot::base_0</parent> <!-- Replace with your actual robot link name -->
+        <child>link</child>
+        <axis>
+          <xyz>0 0 1</xyz> <!-- Rotate around the z-axis -->
+        </axis>
+        <limit>
+          <lower>-1.5708</lower> <!-- Lower limit in radians (90 degrees) -->
+          <upper>1.5708</upper>  <!-- Upper limit in radians (90 degrees) -->
+        </limit>
+        <pose>0 0 0</pose> <!-- Adjust the pose relative to the parent link -->
+      </joint>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <script>
+        <name>orbit_script</name>
+        <uri>file://scripts/orbit_script</uri> <!-- Replace with the actual path to the script file -->
+      </script>
+    </model>
+
+  </world>
+</sdf>
+

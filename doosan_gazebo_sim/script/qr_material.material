@@ -1,0 +1,13 @@
+material Gazebo/QRCode
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture qr.png
+         }
+      }
+   }
+}

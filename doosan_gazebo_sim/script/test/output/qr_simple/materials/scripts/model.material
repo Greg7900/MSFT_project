@@ -1,0 +1,15 @@
+material qr_simple/qr_simple
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture qr_simple.png
+                filtering none
+                scale 1.0 1.0
+            }
+        }
+    }
+}

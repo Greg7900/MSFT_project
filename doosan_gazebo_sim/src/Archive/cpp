@@ -1,0 +1,91 @@
+#include <ros/ros.h>
+#include <sensor_msgs/Image.h>
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <visp3/core/vpImage.h>
+#include <visp3/core/vpImageConvert.h>
+#include <visp3/detection/vpDetectorQRCode.h>
+#include <visp3/gui/vpDisplayOpenCV.h>
+
+void imageCallback(const sensor_msgs::ImageConstPtr& msg)
+{
+    ROS_INFO("cam archre.");
+    try
+    {
+        cv_bridge::CvImagePtr cv_ptr;
+        cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+
+        vpImage<unsigned char> I;
+        vpImageConvert::convert(cv_ptr->image, I);
+
+        vpDetectorQRCode detector;
+        //vpTemplateTrackerTriangle tracker;
+        // Detect QR code
+        bool found = detector.detect(I);
+
+        vpDisplayOpenCV display(I, 0, 0, "QR Code Detection");
+        vpDisplay::display(I);
+
+        if (found)
+        {
+            //std::vector<vpImagePoint> corners = tracker.getCorners();
+            // Assuming the detector provides a bounding box (bb) with top-left corner (tlx, tly), width (w), and height (h)
+            size_t num_codes = detector.getNbObjects(); // Get the number of detected QR codes
+
+            for (size_t i = 0; i < num_codes; ++i)
+            {
+                vpRect bb = detector.getBBox(i); // Get the bounding box for each QR code
+
+                vpImagePoint topLeft(bb.getTop(), bb.getLeft());
+                vpImagePoint topRight(bb.getTop(), bb.getLeft() + bb.getWidth());
+                vpImagePoint bottomLeft(bb.getTop() + bb.getHeight(), bb.getLeft());
+                vpImagePoint bottomRight(bb.getTop() + bb.getHeight(), bb.getLeft() + bb.getWidth());
+
+                // Draw corners for each QR code
+                vpDisplay::displayCross(I, topLeft, 10, vpColor::red, 2);
+                vpDisplay::displayCross(I, topRight, 10, vpColor::red, 2);
+                vpDisplay::displayCross(I, bottomLeft, 10, vpColor::red, 2);
+                vpDisplay::displayCross(I, bottomRight, 10, vpColor::red, 2);
+            }
+
+           ROS_INFO("Detected QR Code message: ");
+        }
+
+        vpDisplay::displayText(I, 10, 10, "Press a key to continue...", vpColor::red);
+        vpDisplay::flush(I);
+
+        if (vpDisplay::getClick(I, false)) {
+            ROS_INFO("Stopping visual servoing...");
+            ros::shutdown();
+        }
+    }
+    catch (const cv_bridge::Exception& e)
+    {
+        ROS_ERROR("cv_bridge exception: %s", e.what());
+        return;
+    }
+    catch (const vpException &e)
+    {
+        ROS_ERROR("ViSP exception: %s", e.what());
+        return;
+    }
+}
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "qr_code_visual_servoing");
+    ros::NodeHandle nh;
+    ros::Subscriber sub = nh.subscribe("/robotic_arm/camera1/image_raw", 10, imageCallback);
+
+    // Set a rate for the loop. Here, 10 Hz is an example rate.
+    ros::Rate loop_rate(10);
+
+    while (ros::ok())
+    {
+        ros::spinOnce();  // Handle ROS incoming messages
+
+        loop_rate.sleep();  // Sleep to maintain the loop rate
+    }
+
+    return 0;
+}
