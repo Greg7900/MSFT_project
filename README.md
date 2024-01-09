@@ -1,6 +1,3 @@
-Voici un modèle de `README.md` pour votre projet de suivi de QR Code avec un robot Doosan M0609 équipé d'une pince OnRobot RG et d'une caméra eye-on-hand, le tout en simulation sur ROS Noetic et Gazebo. Vous pouvez copier et coller ce contenu directement dans votre fichier README sur GitHub.
-
-```markdown
 # Suivi de QR Code avec Robot Doosan M0609 en Simulation Gazebo
 
 ## Aperçu du Projet
